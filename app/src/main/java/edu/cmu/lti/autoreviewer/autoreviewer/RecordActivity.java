@@ -127,8 +127,12 @@ public class RecordActivity extends ActionBarActivity implements MuseIOReceiver.
     }
 
     @Override
-    public void receiveMuseEeg(MuseIOReceiver.MuseConfig config, float[] eeg) {
-        this.uploader.addData(eeg, System.currentTimeMillis()/1000L);
+    public void receiveMuseEeg(MuseIOReceiver.MuseConfig config, float[] eeg)  {
+        try {
+            this.uploader.addData(eeg, System.currentTimeMillis()/1000L);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

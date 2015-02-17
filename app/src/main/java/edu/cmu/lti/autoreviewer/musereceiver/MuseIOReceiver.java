@@ -175,8 +175,8 @@ public class MuseIOReceiver {
         // you could make use of a different library if you want.
         @SuppressWarnings("unused")
         public synchronized void oscEvent(final OscMessage msg) {
-            System.out.println("OSC EVENT!");
-            System.out.println(msg.toString());
+//            System.out.println("OSC EVENT!");
+//            System.out.println(msg.toString());
             MuseConfig config = null;
 
             // Reuse the configuration instead of creating a new one each time

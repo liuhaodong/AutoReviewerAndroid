@@ -1,12 +1,14 @@
 package edu.cmu.lti.autoreviewer.helper;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +28,8 @@ public class EEGDataUploader implements Runnable {
 
     private long timer;
 
+    private boolean startUpload = false;
+
     public EEGDataUploader() throws IOException {
         this.ch0 = new ArrayList<Float>();
         this.ch1 = new ArrayList<Float>();
@@ -36,77 +40,75 @@ public class EEGDataUploader implements Runnable {
     }
 
 
-
-    public void addData(final float[] eegData, final long newTimer){
-        if(newTimer - timer < 1){
+    public void addData(final float[] eegData, final long newTimer) throws IOException {
+        if ( newTimer - timer < 1 || !startUpload) {
             ch0.add(eegData[0]);
             ch1.add(eegData[1]);
             ch2.add(eegData[2]);
             ch3.add(eegData[3]);
-        }else{
+            startUpload = true;
+        } else {
             // Upload data
 
-            Thread uploadThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    for(int i=0; i< 4; i++){
-                        try{
-                            PrintWriter out = new PrintWriter(uploadSocket.getOutputStream(), true);
-                            StringBuilder eegUploadData = new StringBuilder();
-                            eegUploadData.append(1);
-                            eegUploadData.append(",");
-                            eegUploadData.append(DefaultConfig.DEFAULT_USERNAME);
-                            eegUploadData.append(",");
-                            //System.out.println("debug: "+eegData.toString());
-                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                            Date date = new Date();
-                            String dateString = dateFormat.format(date);
-                            eegUploadData.append(dateString);
-                            eegUploadData.append(",");
-                            //System.out.println("debug: "+eegData.toString());
-                            eegUploadData.append(dateString);
+            PrintWriter out = new PrintWriter(uploadSocket.getOutputStream(), true);
 
-                            eegUploadData.append(",");
-                            //System.out.println("debug: "+eegData.toString());
+            for (int i = 0; i < 4; i++) {
+                StringBuilder eegUploadData = new StringBuilder();
+                eegUploadData.append(1);
+                eegUploadData.append(",");
+                eegUploadData.append(DefaultConfig.DEFAULT_USERNAME);
+                eegUploadData.append(",");
+                //System.out.println("debug: "+eegData.toString());
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                Calendar cal = Calendar.getInstance();
 
-                            eegUploadData.append("ch"+i);
-                            eegUploadData.append(",");
+                String dateString = dateFormat.format(cal.getTime());
 
-                            List<Float> eegList = EEGDataUploader.this.getChannel(i);
-                            Float[] eegArray = (Float[]) eegList.toArray();
+                eegUploadData.append(dateString);
+                eegUploadData.append(",");
+                //System.out.println("debug: "+eegData.toString());
+                cal.add(Calendar.SECOND, 1);
+                dateString = dateFormat.format(cal.getTime());
+                eegUploadData.append(dateString);
 
+                eegUploadData.append(",");
+                //System.out.println("debug: "+eegData.toString());
 
+                eegUploadData.append("ch" + i);
+                eegUploadData.append(",");
 
-                            for (int j=0; j < eegArray.length; j++){
-                                eegUploadData.append(eegArray[j]);
-                                eegUploadData.append(" ");
-                            }
-                            out.println(eegData.toString());
-                            eegList.clear();
-                            EEGDataUploader.this.timer = newTimer;
-                            out.close();
-                        }catch (IOException e){
-                            e.printStackTrace();
-                        }
-                    }
+                List<Float> eegList = this.getChannel(i);
+                if(eegList.isEmpty()){
+                    break;
                 }
-            });
+                for (Float tmp : eegList) {
+                    eegUploadData.append((int)tmp.floatValue());
+                    eegUploadData.append(" ");
+                }
 
-            uploadThread.run();
+                out.println(eegUploadData.toString());
+                Log.d("EEGDATA", eegUploadData.toString());
+                eegList.clear();
+
+            }
+            this.timer = newTimer;
 
         }
+
+
     }
 
-    private List<Float> getChannel(int index){
-        if(index == 0){
+
+    private List<Float> getChannel(int index) {
+        if (index == 0) {
             return this.ch0;
-        }else if(index == 1){
+        } else if (index == 1) {
             return this.ch1;
-        }else if(index == 2){
+        } else if (index == 2) {
             return this.ch2;
-        }else if(index == 3){
+        } else if (index == 3) {
             return this.ch3;
-        }else{
+        } else {
             return null;
         }
     }
