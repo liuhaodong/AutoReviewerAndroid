@@ -15,12 +15,15 @@ import android.widget.TextView;
 import java.io.IOError;
 import java.io.IOException;
 
+import edu.cmu.lti.autoreviewer.helper.EEGDataUploader;
 import edu.cmu.lti.autoreviewer.musereceiver.MuseIOReceiver;
 
 
 public class RecordActivity extends ActionBarActivity implements MuseIOReceiver.MuseDataListener {
 
     private MuseIOReceiver receiver;
+
+    private EEGDataUploader uploader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +37,7 @@ public class RecordActivity extends ActionBarActivity implements MuseIOReceiver.
 
         this.receiver = new MuseIOReceiver();
         this.receiver.registerMuseDataListener(this);
+        this.uploader = new EEGDataUploader();
 
         try {
             this.receiver.connect();
@@ -116,13 +120,7 @@ public class RecordActivity extends ActionBarActivity implements MuseIOReceiver.
 
     @Override
     public void receiveMuseEeg(MuseIOReceiver.MuseConfig config, float[] eeg) {
-        System.out.println("Inside muse eeg");
-
-        for (int i=0; i < eeg.length; i++){
-            System.out.print(eeg[i]);
-
-        }
-        System.out.print( '\n');
+        this.uploader.addData(eeg, System.currentTimeMillis()/1000L);
     }
 
     @Override
