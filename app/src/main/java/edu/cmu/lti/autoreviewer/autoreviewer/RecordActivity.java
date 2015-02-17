@@ -1,20 +1,26 @@
 package edu.cmu.lti.autoreviewer.autoreviewer;
 
 import android.content.Intent;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.os.Build;
 import android.widget.Button;
+import android.widget.TextView;
+
+import java.io.IOError;
+import java.io.IOException;
+
+import edu.cmu.lti.autoreviewer.musereceiver.MuseIOReceiver;
 
 
-public class RecordActivity extends ActionBarActivity {
+public class RecordActivity extends ActionBarActivity implements MuseIOReceiver.MuseDataListener {
+
+    private MuseIOReceiver receiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +31,34 @@ public class RecordActivity extends ActionBarActivity {
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+
+        this.receiver = new MuseIOReceiver();
+        this.receiver.registerMuseDataListener(this);
+
+        try {
+            this.receiver.connect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Activity Created!");
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        try {
+            this.receiver.connect();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        this.receiver.disconnect();
     }
 
 
@@ -48,6 +82,57 @@ public class RecordActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void receiveMuseElementsAlpha(MuseIOReceiver.MuseConfig config, final float[] alpha) {
+
+        System.out.println(" ALPHA EEG !!!!");
+
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                ((TextView) RecordActivity.this
+                        .findViewById(R.id.eeg_signal)).setText(String.format(
+                        "%.2f", alpha[0]));
+            }
+        });
+    }
+
+    @Override
+    public void receiveMuseElementsBeta(MuseIOReceiver.MuseConfig config, float[] beta) {
+
+    }
+
+    @Override
+    public void receiveMuseElementsTheta(MuseIOReceiver.MuseConfig config, float[] theta) {
+
+    }
+
+    @Override
+    public void receiveMuseElementsDelta(MuseIOReceiver.MuseConfig config, float[] delta) {
+
+    }
+
+    @Override
+    public void receiveMuseEeg(MuseIOReceiver.MuseConfig config, float[] eeg) {
+        System.out.println("Inside muse eeg");
+
+        for (int i=0; i < eeg.length; i++){
+            System.out.print(eeg[i]);
+
+        }
+        System.out.print( '\n');
+    }
+
+    @Override
+    public void receiveMuseAccel(MuseIOReceiver.MuseConfig config, float[] accel) {
+
+    }
+
+    @Override
+    public void receiveMuseBattery(MuseIOReceiver.MuseConfig config, int[] battery) {
+
     }
 
     /**
