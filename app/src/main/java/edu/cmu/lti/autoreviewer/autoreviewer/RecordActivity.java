@@ -37,7 +37,15 @@ public class RecordActivity extends ActionBarActivity implements MuseIOReceiver.
 
         this.receiver = new MuseIOReceiver();
         this.receiver.registerMuseDataListener(this);
-        this.uploader = new EEGDataUploader();
+
+        try {
+            this.uploader = new EEGDataUploader();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Thread newThread = new Thread(uploader);
+        newThread.start();
+//        this.uploader = new EEGDataUploader();
 
         try {
             this.receiver.connect();
