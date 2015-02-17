@@ -11,19 +11,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.os.Build;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-
-import java.util.Arrays;
+import android.widget.Button;
 
 
-public class MainActivity extends ActionBarActivity {
+public class RecordActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_record);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment())
@@ -35,7 +31,7 @@ public class MainActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_record, menu);
         return true;
     }
 
@@ -65,25 +61,17 @@ public class MainActivity extends ActionBarActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
+            View rootView = inflater.inflate(R.layout.fragment_record, container, false);
 
-            String[] fakeData = {"Transformers", "Harry Potter","Godzilla"};
+            Button resultButton = (Button) rootView.findViewById(R.id.get_result_button);
 
-            ArrayAdapter<String> movieAdapter = new ArrayAdapter<String>(getActivity(), R.layout.movie_text, R.id.movie_text,  Arrays.asList(fakeData));
-
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-
-            ListView movieList = (ListView) rootView.findViewById(R.id.movie_selection_list);
-            movieList.setAdapter(movieAdapter);
-
-
-            movieList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            resultButton.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Intent recordIntent = new Intent(getActivity(), RecordActivity.class);
-                    startActivity(recordIntent);
+                public void onClick(View v) {
+                    Intent resultIntent = new Intent(v.getContext(), ResultActivity.class);
+                    startActivity(resultIntent);
                 }
             });
-
 
             return rootView;
         }
