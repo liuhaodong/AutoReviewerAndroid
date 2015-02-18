@@ -8,9 +8,50 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="edu.cmu.lti.autoreviewer.autoreviewer.ResultActivity$PlaceholderFragment">
 
+
     <TextView
-        android:id="@+id/review_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello_world" />
+        android:text="Movie Name"
+        android:id="@+id/movie_name"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Score"
+        android:id="@+id/score_value"
+        android:layout_marginTop="20dp"
+        android:layout_alignParentRight="true"
+        android:layout_below="@+id/movie_name" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello World!"
+        android:id="@+id/review_text"
+        android:layout_below="@+id/score_value"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="20dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="User Name"
+        android:id="@+id/user_name_result"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Review Date"
+        android:id="@+id/review_date"
+        android:layout_alignBottom="@+id/user_name_result"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
 </RelativeLayout>
