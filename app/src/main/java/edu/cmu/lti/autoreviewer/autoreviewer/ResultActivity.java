@@ -18,6 +18,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import edu.cmu.lti.autoreviewer.configuration.DefaultConfig;
+
 
 public class ResultActivity extends ActionBarActivity {
 
@@ -32,7 +34,7 @@ public class ResultActivity extends ActionBarActivity {
                     .commit();
         }
 
-        new ReviewResultReceiver().execute("128.237.168.221", "7000");
+        new ReviewResultReceiver().execute(DefaultConfig.DEFAULT_SERVER_IP, ""+DefaultConfig.DEFAULT_REVIEW_PORT);
     }
 
 

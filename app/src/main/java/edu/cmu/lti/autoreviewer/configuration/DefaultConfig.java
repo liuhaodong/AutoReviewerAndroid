@@ -7,4 +7,5 @@ public class DefaultConfig {
     public static String DEFAULT_SERVER_IP = "128.237.168.221";
     public static int DEFAULT_PORT = 5000;
     public static String DEFAULT_USERNAME = "testuser";
+    public static int DEFAULT_REVIEW_PORT = 7000;
 }
