@@ -1,13 +1,22 @@
 package edu.cmu.lti.autoreviewer.autoreviewer;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 
 
 public class ResultActivity extends ActionBarActivity {
@@ -22,6 +31,8 @@ public class ResultActivity extends ActionBarActivity {
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+
+        new ReviewResultReceiver().execute("128.237.168.221", "7000");
     }
 
 
@@ -47,6 +58,55 @@ public class ResultActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+
+    private class ReviewResultReceiver extends AsyncTask<String, Integer, String> {
+
+        Socket reviewSocket;
+        PrintWriter out = null;
+        BufferedReader in = null;
+        StringBuilder builder = null;
+
+        @Override
+        protected String doInBackground(String... strings) {
+            try {
+                Log.d("ReviewSocket", strings[0]);
+                Log.d("ReviewSocket", strings[1]);
+                this.reviewSocket = new Socket(strings[0], Integer.parseInt(strings[1]));
+                out = new PrintWriter(reviewSocket.getOutputStream(), true);
+                in = new BufferedReader(new InputStreamReader(
+                        reviewSocket.getInputStream()));
+
+                BufferedReader stdIn = new BufferedReader(
+                        new InputStreamReader(System.in));
+                String userInput;
+
+                builder = new StringBuilder();
+                //System.out.print ("input: ");
+
+                out.println("This is a review request!");
+
+                String line = null;
+
+                while ( (line = in.readLine())!=null ){
+                    builder.append(line);
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "No Review!";
+            }
+            String tmp = builder.toString();
+            return tmp;
+
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            TextView reviewText = (TextView) findViewById(R.id.review_text);
+            reviewText.setText(result);
+        }
+    }
+
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -59,6 +119,7 @@ public class ResultActivity extends ActionBarActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_result, container, false);
+
             return rootView;
         }
     }

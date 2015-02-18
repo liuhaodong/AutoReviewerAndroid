@@ -1,9 +1,11 @@
 package edu.cmu.lti.autoreviewer.autoreviewer;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +26,8 @@ public class RecordActivity extends ActionBarActivity implements MuseIOReceiver.
     private MuseIOReceiver receiver;
 
     private EEGDataUploader uploader;
+
+    public static boolean uploadFlag = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,11 +131,14 @@ public class RecordActivity extends ActionBarActivity implements MuseIOReceiver.
     }
 
     @Override
-    public void receiveMuseEeg(MuseIOReceiver.MuseConfig config, float[] eeg)  {
-        try {
-            this.uploader.addData(eeg, System.currentTimeMillis()/1000L);
-        } catch (IOException e) {
-            e.printStackTrace();
+    public void receiveMuseEeg(MuseIOReceiver.MuseConfig config, float[] eeg) {
+        if (RecordActivity.uploadFlag) {
+            Log.d("Record", "Recording");
+            try {
+                this.uploader.addData(eeg, System.currentTimeMillis() / 1000L);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -145,6 +152,8 @@ public class RecordActivity extends ActionBarActivity implements MuseIOReceiver.
 
     }
 
+
+
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -152,6 +161,8 @@ public class RecordActivity extends ActionBarActivity implements MuseIOReceiver.
 
         public PlaceholderFragment() {
         }
+
+
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -163,10 +174,31 @@ public class RecordActivity extends ActionBarActivity implements MuseIOReceiver.
             resultButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
                     Intent resultIntent = new Intent(v.getContext(), ResultActivity.class);
                     startActivity(resultIntent);
                 }
             });
+
+
+            final Button recordButton = (Button) rootView.findViewById(R.id.record_button);
+            recordButton.setTag(1);
+            recordButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    final int status = (Integer) v.getTag();
+                    if (status == 1) {
+                        recordButton.setText("Stop");
+                        v.setTag(0); //pause
+                        RecordActivity.uploadFlag = !RecordActivity.uploadFlag;
+                    } else {
+                        recordButton.setText("Record");
+                        v.setTag(1); //record
+                        RecordActivity.uploadFlag = !RecordActivity.uploadFlag;
+                    }
+                }
+            });
+
 
             return rootView;
         }
