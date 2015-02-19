@@ -105,7 +105,22 @@ public class ResultActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(String result) {
             TextView reviewText = (TextView) findViewById(R.id.review_text);
-            reviewText.setText(result);
+            TextView movieNameView = (TextView) findViewById(R.id.movie_name);
+            TextView usernameView = (TextView) findViewById(R.id.user_name_result);
+            TextView dateView = (TextView) findViewById(R.id.review_date);
+            TextView scoreView = (TextView) findViewById(R.id.score_value);
+            String[] reviewArray = result.split("#");
+            String movieName = reviewArray[0];
+            String username = reviewArray[1];
+            String date = reviewArray[2];
+            String score = reviewArray[3];
+            String reviewTextString = reviewArray[4];
+
+            reviewText.setText(reviewTextString);
+            movieNameView.setText(movieName);
+            usernameView.setText(username);
+            dateView.setText(date);
+            scoreView.setText(score);
         }
     }
 
