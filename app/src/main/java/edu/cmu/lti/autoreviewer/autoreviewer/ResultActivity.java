@@ -1,5 +1,7 @@
 package edu.cmu.lti.autoreviewer.autoreviewer;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,6 +14,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,6 +29,12 @@ import edu.cmu.lti.autoreviewer.configuration.DefaultConfig;
 
 public class ResultActivity extends ActionBarActivity {
 
+    public static String username;
+    public static String serverIP;
+
+    public static String startTime;
+    public static String endTime;
+    public static String movieName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +45,16 @@ public class ResultActivity extends ActionBarActivity {
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+        SharedPreferences sharedPref = this.getSharedPreferences(LoginActivity.PREFS_NAME, 0);
+        username = sharedPref.getString(getString(R.string.prompt_username), DefaultConfig.DEFAULT_USERNAME);
+        String serverIP = sharedPref.getString(getString(R.string.prompt_server_ip), DefaultConfig.DEFAULT_SERVER_IP);
 
-        new ReviewResultReceiver().execute(DefaultConfig.DEFAULT_SERVER_IP, ""+DefaultConfig.DEFAULT_REVIEW_PORT);
+        Intent myIntent = getIntent();
+
+        startTime = myIntent.getStringExtra(getString(R.string.start_time));
+        endTime = myIntent.getStringExtra(getString(R.string.end_time));
+        movieName = myIntent.getStringExtra("MovieName");
+        new ReviewResultReceiver().execute(serverIP, ""+DefaultConfig.DEFAULT_REVIEW_PORT);
     }
 
 
@@ -71,8 +91,6 @@ public class ResultActivity extends ActionBarActivity {
         @Override
         protected String doInBackground(String... strings) {
             try {
-                Log.d("ReviewSocket", strings[0]);
-                Log.d("ReviewSocket", strings[1]);
                 this.reviewSocket = new Socket(strings[0], Integer.parseInt(strings[1]));
                 out = new PrintWriter(reviewSocket.getOutputStream(), true);
                 in = new BufferedReader(new InputStreamReader(
@@ -85,7 +103,12 @@ public class ResultActivity extends ActionBarActivity {
                 builder = new StringBuilder();
                 //System.out.print ("input: ");
 
-                out.println("This is a review request!");
+                String outputString = "start: "+ResultActivity.startTime+"#end: "+ResultActivity.endTime+"#movie: "+ movieName+"#subjectName: "+username+"#subjectId: "+username.hashCode();
+
+                Log.d("requestString", outputString);
+//                out.println("start: 2015-03-14 09:05:21#end: 2015-03-14 09:12:01#movie: La Luna#subjectName: test#subjectId: 1");
+
+                out.println(outputString);
 
                 String line = null;
 
@@ -104,23 +127,45 @@ public class ResultActivity extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(String result) {
+            Log.d("review", result);
             TextView reviewText = (TextView) findViewById(R.id.review_text);
             TextView movieNameView = (TextView) findViewById(R.id.movie_name);
             TextView usernameView = (TextView) findViewById(R.id.user_name_result);
             TextView dateView = (TextView) findViewById(R.id.review_date);
             TextView scoreView = (TextView) findViewById(R.id.score_value);
             String[] reviewArray = result.split("#");
+            if(reviewArray.length < 5){
+                return;
+            }
             String movieName = reviewArray[0];
             String username = reviewArray[1];
             String date = reviewArray[2];
             String score = reviewArray[3];
             String reviewTextString = reviewArray[4];
 
-            reviewText.setText(reviewTextString);
+            String[] reviewTextSegments = reviewTextString.split("\\$");
+
+            String finalReviewString = "";
+
+            for(String tmp : reviewTextSegments){
+                finalReviewString = finalReviewString + tmp + "\n";
+            }
+
+            reviewText.setText(finalReviewString);
             movieNameView.setText(movieName);
             usernameView.setText(username);
             dateView.setText(date);
             scoreView.setText(score);
+
+            GraphView graph = (GraphView) findViewById(R.id.result_graph);
+            LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(new DataPoint[] {
+                    new DataPoint(0, 1),
+                    new DataPoint(1, 5),
+                    new DataPoint(2, 3),
+                    new DataPoint(3, 2),
+                    new DataPoint(4, 6)
+            });
+            graph.addSeries(series);
         }
     }
 

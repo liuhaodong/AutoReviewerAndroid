@@ -1,6 +1,8 @@
 package edu.cmu.lti.autoreviewer.autoreviewer;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
@@ -14,6 +16,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import java.util.Arrays;
+
+import edu.cmu.lti.autoreviewer.configuration.DefaultConfig;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -67,13 +71,16 @@ public class MainActivity extends ActionBarActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
 
-            String[] fakeData = {"Transformers", "Harry Potter","Godzilla"};
+            SharedPreferences sharedPref = getActivity().getSharedPreferences(LoginActivity.PREFS_NAME, 0);
+            String username = sharedPref.getString(getString(R.string.prompt_username), DefaultConfig.DEFAULT_USERNAME);
+            String serverIP = sharedPref.getString(getString(R.string.prompt_server_ip), DefaultConfig.DEFAULT_SERVER_IP);
+            String[] fakeData = {"La Luna", "Transformers","Godzilla"};
 
             ArrayAdapter<String> movieAdapter = new ArrayAdapter<String>(getActivity(), R.layout.movie_text, R.id.movie_text,  Arrays.asList(fakeData));
 
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-            ListView movieList = (ListView) rootView.findViewById(R.id.movie_selection_list);
+            final ListView movieList = (ListView) rootView.findViewById(R.id.movie_selection_list);
             movieList.setAdapter(movieAdapter);
 
 
@@ -81,6 +88,7 @@ public class MainActivity extends ActionBarActivity {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Intent recordIntent = new Intent(getActivity(), RecordActivity.class);
+                    recordIntent.putExtra("MovieName", movieList.getItemAtPosition(position).toString().trim());
                     startActivity(recordIntent);
                 }
             });

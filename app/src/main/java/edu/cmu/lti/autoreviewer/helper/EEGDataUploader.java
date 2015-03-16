@@ -1,5 +1,6 @@
 package edu.cmu.lti.autoreviewer.helper;
 
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -12,6 +13,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import edu.cmu.lti.autoreviewer.autoreviewer.LoginActivity;
+import edu.cmu.lti.autoreviewer.autoreviewer.R;
 import edu.cmu.lti.autoreviewer.configuration.DefaultConfig;
 
 /**
@@ -30,13 +33,17 @@ public class EEGDataUploader implements Runnable {
 
     private boolean startUpload = false;
 
-    public EEGDataUploader() throws IOException {
+    private String username;
+    private String serverIP;
+
+    public EEGDataUploader(String pUsername, String pServerIP) throws IOException {
         this.ch0 = new ArrayList<Float>();
         this.ch1 = new ArrayList<Float>();
         this.ch2 = new ArrayList<Float>();
         this.ch3 = new ArrayList<Float>();
         this.timer = System.currentTimeMillis() / 1000L;
-
+        this.username = pUsername;
+        this.serverIP = pServerIP;
     }
 
 
@@ -54,9 +61,9 @@ public class EEGDataUploader implements Runnable {
 
             for (int i = 0; i < 4; i++) {
                 StringBuilder eegUploadData = new StringBuilder();
-                eegUploadData.append(1);
+                eegUploadData.append(username.hashCode());
                 eegUploadData.append(",");
-                eegUploadData.append(DefaultConfig.DEFAULT_USERNAME);
+                eegUploadData.append(username);
                 eegUploadData.append(",");
                 //System.out.println("debug: "+eegData.toString());
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
@@ -87,7 +94,7 @@ public class EEGDataUploader implements Runnable {
                 }
 
                 out.println(eegUploadData.toString());
-                Log.d("EEGDATA", eegUploadData.toString());
+//                Log.d("EEGDATA", eegUploadData.toString());
                 eegList.clear();
 
             }
@@ -117,7 +124,7 @@ public class EEGDataUploader implements Runnable {
     @Override
     public void run() {
         try {
-            uploadSocket = new Socket(DefaultConfig.DEFAULT_SERVER_IP, DefaultConfig.DEFAULT_PORT);
+            uploadSocket = new Socket(serverIP, DefaultConfig.DEFAULT_PORT);
         } catch (IOException e) {
             e.printStackTrace();
         }

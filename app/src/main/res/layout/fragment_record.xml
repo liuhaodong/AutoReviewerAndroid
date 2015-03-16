@@ -39,24 +39,25 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="EEG Signal"
-        android:id="@+id/eeg_signal"
-        android:layout_below="@+id/textView2"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
-
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/movie_image"
-        android:src="@drawable/transformers"
-        android:layout_above="@+id/record_button"
-        android:layout_below="@+id/eeg_signal"
+        android:src="@drawable/la_luna"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textView2"
+        android:layout_above="@+id/record_button"
+        android:layout_alignRight="@+id/get_result_button"
+        android:layout_alignEnd="@+id/get_result_button" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="EEG Value"
+        android:id="@+id/eeg_value"
+        android:layout_above="@+id/get_result_button"
+        android:layout_centerHorizontal="true" />
 
 
 </RelativeLayout>
