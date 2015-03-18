@@ -66,16 +66,17 @@ public class EEGDataUploader implements Runnable {
                 eegUploadData.append(username);
                 eegUploadData.append(",");
                 //System.out.println("debug: "+eegData.toString());
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-                Calendar cal = Calendar.getInstance();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                Date date = new Date();
 
-                String dateString = dateFormat.format(cal.getTime());
+                String dateString = dateFormat.format(date);
 
                 eegUploadData.append(dateString);
                 eegUploadData.append(",");
                 //System.out.println("debug: "+eegData.toString());
-                cal.add(Calendar.SECOND, 1);
-                dateString = dateFormat.format(cal.getTime());
+                date.setTime(date.getTime() + 1000);
+
+                dateString = dateFormat.format(date);
                 eegUploadData.append(dateString);
 
                 eegUploadData.append(",");

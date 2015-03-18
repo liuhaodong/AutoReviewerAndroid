@@ -54,7 +54,7 @@ public class ResultActivity extends ActionBarActivity {
         startTime = myIntent.getStringExtra(getString(R.string.start_time));
         endTime = myIntent.getStringExtra(getString(R.string.end_time));
         movieName = myIntent.getStringExtra("MovieName");
-        new ReviewResultReceiver().execute(serverIP, ""+DefaultConfig.DEFAULT_REVIEW_PORT);
+        new ReviewResultReceiver().execute(serverIP, "" + DefaultConfig.DEFAULT_REVIEW_PORT);
     }
 
 
@@ -103,7 +103,7 @@ public class ResultActivity extends ActionBarActivity {
                 builder = new StringBuilder();
                 //System.out.print ("input: ");
 
-                String outputString = "start: "+ResultActivity.startTime+"#end: "+ResultActivity.endTime+"#movie: "+ movieName+"#subjectName: "+username+"#subjectId: "+username.hashCode();
+                String outputString = "start: " + ResultActivity.startTime + "#end: " + ResultActivity.endTime + "#movie: " + movieName + "#subjectName: " + username + "#subjectId: " + username.hashCode();
 
                 Log.d("requestString", outputString);
 //                out.println("start: 2015-03-14 09:05:21#end: 2015-03-14 09:12:01#movie: La Luna#subjectName: test#subjectId: 1");
@@ -112,7 +112,7 @@ public class ResultActivity extends ActionBarActivity {
 
                 String line = null;
 
-                while ( (line = in.readLine())!=null ){
+                while ((line = in.readLine()) != null) {
                     builder.append(line);
                 }
 
@@ -134,7 +134,7 @@ public class ResultActivity extends ActionBarActivity {
             TextView dateView = (TextView) findViewById(R.id.review_date);
             TextView scoreView = (TextView) findViewById(R.id.score_value);
             String[] reviewArray = result.split("#");
-            if(reviewArray.length < 5){
+            if (reviewArray.length < 5) {
                 return;
             }
             String movieName = reviewArray[0];
@@ -142,12 +142,15 @@ public class ResultActivity extends ActionBarActivity {
             String date = reviewArray[2];
             String score = reviewArray[3];
             String reviewTextString = reviewArray[4];
+            int timeInterval = Integer.parseInt(reviewArray[5]);
+
+            String[] rawDataString = reviewArray[6].split(" ");
 
             String[] reviewTextSegments = reviewTextString.split("\\$");
 
             String finalReviewString = "";
 
-            for(String tmp : reviewTextSegments){
+            for (String tmp : reviewTextSegments) {
                 finalReviewString = finalReviewString + tmp + "\n";
             }
 
@@ -158,13 +161,15 @@ public class ResultActivity extends ActionBarActivity {
             scoreView.setText(score);
 
             GraphView graph = (GraphView) findViewById(R.id.result_graph);
-            LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(new DataPoint[] {
-                    new DataPoint(0, 1),
-                    new DataPoint(1, 5),
-                    new DataPoint(2, 3),
-                    new DataPoint(3, 2),
-                    new DataPoint(4, 6)
-            });
+            DataPoint[] dataPoints = new DataPoint[rawDataString.length];
+
+            int sum = 0;
+            for (int i = 0; i < rawDataString.length; i++) {
+                dataPoints[i] = new DataPoint(i * timeInterval, Double.parseDouble(rawDataString[i]));
+            }
+
+            LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(dataPoints);
+
             graph.addSeries(series);
         }
     }

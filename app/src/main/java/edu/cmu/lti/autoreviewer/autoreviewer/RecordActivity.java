@@ -16,7 +16,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.IOError;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -211,6 +210,12 @@ public class RecordActivity extends ActionBarActivity implements MuseIOReceiver.
                 case "Godzilla":
                     img.setImageResource(R.drawable.godzilla);
                     break;
+                case "iphone_ads":
+                    img.setImageResource(R.drawable.iphone_5s);
+                    break;
+                case "iphone_android_wp":
+                    img.setImageResource(R.drawable.applevsandroidvswindows);
+                    break;
                 default:
                     break;
             }
@@ -220,7 +225,9 @@ public class RecordActivity extends ActionBarActivity implements MuseIOReceiver.
             resultButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    if(startTime == null || endTime == null){
+                        return;
+                    }
                     Intent resultIntent = new Intent(v.getContext(), ResultActivity.class);
                     DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String startTime = df.format(RecordActivity.startTime);
