@@ -27,18 +27,30 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.interaxon.libmuse.ConnectionState;
+import com.interaxon.libmuse.Muse;
+import com.interaxon.libmuse.MuseConnectionListener;
+import com.interaxon.libmuse.MuseConnectionPacket;
+import com.interaxon.libmuse.MuseDataPacketType;
+import com.interaxon.libmuse.MuseManager;
+import com.interaxon.libmuse.MusePreset;
+import com.interaxon.libmuse.MuseVersion;
+
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 import edu.cmu.lti.autoreviewer.configuration.DefaultConfig;
+import edu.cmu.lti.autoreviewer.helper.MuseSingle;
 
 
 /**
  * A login screen that offers login via email/password.
  */
-public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
+public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>, OnClickListener {
 
     public static final String PREFS_NAME = "MyPrefsFile";
     /**
@@ -59,10 +71,61 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     private View mProgressView;
     private View mLoginFormView;
 
+    private Muse muse = null;
+    private ConnectionListener connectionListener = null;
+    private boolean dataTransmission = true;
+
+    class ConnectionListener extends MuseConnectionListener {
+
+        final WeakReference<Activity> activityRef;
+
+        ConnectionListener(final WeakReference<Activity> activityRef) {
+            this.activityRef = activityRef;
+        }
+
+        @Override
+        public void receiveMuseConnectionPacket(MuseConnectionPacket p) {
+            final ConnectionState current = p.getCurrentConnectionState();
+            final String status = p.getPreviousConnectionState().toString() +
+                    " -> " + current;
+            final String full = "Muse " + p.getSource().getMacAddress() +
+                    " " + status;
+            Log.i("Muse Headband", full);
+            Activity activity = activityRef.get();
+            // UI thread is used here only because we need to update
+            // TextView values. You don't have to use another thread, unless
+            // you want to run disconnect() or connect() from connection packet
+            // handler. In this case creating another thread is required.
+            if (activity != null) {
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        TextView statusText =
+                                (TextView) findViewById(R.id.con_status);
+                        statusText.setText(status);
+
+                        if (current == ConnectionState.CONNECTED) {
+                            MuseVersion museVersion = muse.getMuseVersion();
+                            String version = museVersion.getFirmwareType() +
+                                    " - " + museVersion.getFirmwareVersion() +
+                                    " - " + Integer.toString(
+                                    museVersion.getProtocolVersion());
+                        } else {
+                        }
+                    }
+                });
+            }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        WeakReference<Activity> weakActivity =
+                new WeakReference<Activity>(this);
+        connectionListener = new ConnectionListener(weakActivity);
 
         // Set up the login form.
         mUsername = (EditText) findViewById(R.id.username);
@@ -90,7 +153,15 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
         });
 
         mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
+
+
+
+        Button refreshButton = (Button) findViewById(R.id.refresh);
+        refreshButton.setOnClickListener(this);
+        Button connectButton = (Button) findViewById(R.id.connect);
+        connectButton.setOnClickListener(this);
+        Button disconnectButton = (Button) findViewById(R.id.disconnect);
+        disconnectButton.setOnClickListener(this);
     }
 
     private void populateAutoComplete() {
@@ -245,6 +316,84 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor> {
     @Override
     public void onLoaderReset(Loader<Cursor> cursorLoader) {
 
+    }
+
+    private void configure_library() {
+        muse.registerConnectionListener(connectionListener);
+//        muse.registerDataListener(dataListener,
+//                MuseDataPacketType.ACCELEROMETER);
+//        muse.registerDataListener(dataListener,
+//                MuseDataPacketType.EEG);
+//        muse.registerDataListener(dataListener,
+//                MuseDataPacketType.ALPHA_RELATIVE);
+//        muse.registerDataListener(dataListener,
+//                MuseDataPacketType.ARTIFACTS);
+        muse.setPreset(MusePreset.PRESET_14);
+        muse.enableDataTransmission(dataTransmission);
+    }
+
+    @Override
+    public void onClick(View v) {
+        {
+            Spinner musesSpinner = (Spinner) findViewById(R.id.muses_spinner);
+            if (v.getId() == R.id.refresh) {
+                MuseManager.refreshPairedMuses();
+                List<Muse> pairedMuses = MuseManager.getPairedMuses();
+                List<String> spinnerItems = new ArrayList<String>();
+                for (Muse m: pairedMuses) {
+                    String dev_id = m.getName() + "-" + m.getMacAddress();
+                    Log.i("Muse Headband", dev_id);
+                    spinnerItems.add(dev_id);
+                }
+                ArrayAdapter<String> adapterArray = new ArrayAdapter<String> (
+                        this, android.R.layout.simple_spinner_item, spinnerItems);
+                musesSpinner.setAdapter(adapterArray);
+            }
+            else if (v.getId() == R.id.connect) {
+                List<Muse> pairedMuses = MuseManager.getPairedMuses();
+                if (pairedMuses.size() < 1 ||
+                        musesSpinner.getAdapter().getCount() < 1) {
+                    Log.w("Muse Headband", "There is nothing to connect to");
+                }
+                else {
+                    muse = pairedMuses.get(musesSpinner.getSelectedItemPosition());
+                    MuseSingle.setMuse(muse);
+                    ConnectionState state = muse.getConnectionState();
+                    if (state == ConnectionState.CONNECTED ||
+                            state == ConnectionState.CONNECTING) {
+                        Log.w("Muse Headband", "doesn't make sense to connect second time to the same muse");
+                        return;
+                    }
+                    configure_library();
+                    /**
+                     * In most cases libmuse native library takes care about
+                     * exceptions and recovery mechanism, but native code still
+                     * may throw in some unexpected situations (like bad bluetooth
+                     * connection). Print all exceptions here.
+                     */
+                    try {
+                        muse.runAsynchronously();
+                    } catch (Exception e) {
+                        Log.e("Muse Headband", e.toString());
+                    }
+                }
+            }
+            else if (v.getId() == R.id.disconnect) {
+                if (muse != null) {
+                    /**
+                     * true flag will force libmuse to unregister all listeners,
+                     * BUT AFTER disconnecting and sending disconnection event.
+                     * If you don't want to receive disconnection event (for ex.
+                     * you call disconnect when application is closed), then
+                     * unregister listeners first and then call disconnect:
+                     * muse.unregisterAllListeners();
+                     * muse.disconnect(false);
+                     */
+                    muse.disconnect(true);
+                }
+            }
+
+        }
     }
 
     private interface ProfileQuery {

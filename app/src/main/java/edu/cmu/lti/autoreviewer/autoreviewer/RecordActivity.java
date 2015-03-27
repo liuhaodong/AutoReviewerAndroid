@@ -1,5 +1,6 @@
 package edu.cmu.lti.autoreviewer.autoreviewer;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -16,21 +17,28 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.interaxon.libmuse.Muse;
+import com.interaxon.libmuse.MuseDataPacketType;
+import com.interaxon.libmuse.MusePreset;
+
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import edu.cmu.lti.autoreviewer.configuration.DefaultConfig;
+import edu.cmu.lti.autoreviewer.helper.DataListener;
 import edu.cmu.lti.autoreviewer.helper.EEGDataUploader;
+import edu.cmu.lti.autoreviewer.helper.MuseSingle;
 import edu.cmu.lti.autoreviewer.musereceiver.MuseIOReceiver;
 
 
-public class RecordActivity extends ActionBarActivity implements MuseIOReceiver.MuseDataListener {
+public class RecordActivity extends ActionBarActivity  {
 
     private MuseIOReceiver receiver;
 
-    private EEGDataUploader uploader;
+    public EEGDataUploader uploader;
 
     public static boolean uploadFlag = false;
 
@@ -38,6 +46,9 @@ public class RecordActivity extends ActionBarActivity implements MuseIOReceiver.
 
     public static Date startTime;
     public static Date endTime;
+
+    private Muse muse;
+    private DataListener dataListener = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,12 +60,20 @@ public class RecordActivity extends ActionBarActivity implements MuseIOReceiver.
                     .commit();
         }
 
+        muse = MuseSingle.getMuse();
+
+        WeakReference<Activity> weakActivity =
+                new WeakReference<Activity>(this);
+        dataListener = new DataListener(weakActivity);
+        muse.registerDataListener(dataListener,
+                MuseDataPacketType.EEG);
+        muse.setPreset(MusePreset.PRESET_14);
+
+        muse.enableDataTransmission(true);
+
         Intent myIntent = getIntent();
 
         movieName = myIntent.getStringExtra("MovieName");
-
-        this.receiver = new MuseIOReceiver();
-        this.receiver.registerMuseDataListener(this);
 
         SharedPreferences sharedPref = this.getSharedPreferences(LoginActivity.PREFS_NAME, 0);
         String username = sharedPref.getString(getString(R.string.prompt_username), DefaultConfig.DEFAULT_USERNAME);
@@ -76,26 +95,11 @@ public class RecordActivity extends ActionBarActivity implements MuseIOReceiver.
     @Override
     protected void onResume() {
         super.onResume();
-            AsyncTask newTask = new AsyncTask() {
-                @Override
-                protected Object doInBackground(Object[] params) {
-                    try {
-                        RecordActivity.this.receiver.connect();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    return null;
-                }
-            };
-
-        newTask.execute();
-
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        this.receiver.disconnect();
     }
 
 
@@ -119,63 +123,6 @@ public class RecordActivity extends ActionBarActivity implements MuseIOReceiver.
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void receiveMuseElementsAlpha(MuseIOReceiver.MuseConfig config, final float[] alpha) {
-
-    }
-
-    @Override
-    public void receiveMuseElementsBeta(MuseIOReceiver.MuseConfig config, float[] beta) {
-
-    }
-
-    @Override
-    public void receiveMuseElementsTheta(MuseIOReceiver.MuseConfig config, float[] theta) {
-
-    }
-
-    @Override
-    public void receiveMuseElementsDelta(MuseIOReceiver.MuseConfig config, float[] delta) {
-
-    }
-
-    @Override
-    public void receiveMuseEeg(MuseIOReceiver.MuseConfig config, final float[] eeg) {
-
-
-
-        if (RecordActivity.uploadFlag) {
-            Log.d("Record", "Recording");
-            this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    TextView eegValueView = (TextView) findViewById(R.id.eeg_value);
-                    String eegValueString = "";
-                    for(int i=0; i<eeg.length; i++){
-                        eegValueString+=(int) eeg[i];
-                        eegValueString+="   ";
-                    }
-                    eegValueView.setText(eegValueString);
-                }
-            });
-            try {
-                this.uploader.addData(eeg, System.currentTimeMillis() / 1000L);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    @Override
-    public void receiveMuseAccel(MuseIOReceiver.MuseConfig config, float[] accel) {
-
-    }
-
-    @Override
-    public void receiveMuseBattery(MuseIOReceiver.MuseConfig config, int[] battery) {
-
     }
 
 

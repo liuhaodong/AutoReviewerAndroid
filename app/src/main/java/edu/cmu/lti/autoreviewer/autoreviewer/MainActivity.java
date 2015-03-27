@@ -74,7 +74,7 @@ public class MainActivity extends ActionBarActivity {
             SharedPreferences sharedPref = getActivity().getSharedPreferences(LoginActivity.PREFS_NAME, 0);
             String username = sharedPref.getString(getString(R.string.prompt_username), DefaultConfig.DEFAULT_USERNAME);
             String serverIP = sharedPref.getString(getString(R.string.prompt_server_ip), DefaultConfig.DEFAULT_SERVER_IP);
-            String[] fakeData = {"La Luna","Iphone ADs","Different Phones", "Transformers","Godzilla"};
+            String[] fakeData = {"La Luna","Iphone ADs","Different Phones","Crash The Super Bowl", "Transformers","Godzilla"};
 
             ArrayAdapter<String> movieAdapter = new ArrayAdapter<String>(getActivity(), R.layout.movie_text, R.id.movie_text,  Arrays.asList(fakeData));
 
@@ -98,6 +98,9 @@ public class MainActivity extends ActionBarActivity {
                             break;
                         case "Different Phones":
                             recordIntent.putExtra("MovieName", "iphone_android_wp");
+                            break;
+                        case "Crash The Super Bowl":
+                            recordIntent.putExtra("MovieName", "Crash The Super Bowl");
                             break;
                         default:
                             recordIntent.putExtra("MovieName", movieList.getItemAtPosition(position).toString().trim());

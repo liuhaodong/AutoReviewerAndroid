@@ -15,5 +15,13 @@
     <string name="start_time">StartTime</string>
     <string name="end_time">EndTime</string>
     <string name="title_activity_draw_graph">DrawGraphActivity</string>
+    <string name="connect">Connect</string>
+    <string name="status">Connection Status:</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="refresh">Refresh</string>
+    <string name="eeg">EEG data:</string>
+    <string name="accel">Accelerometer Data:</string>
+    <string name="version">Version:</string>
+    <string name="undefined">unknown</string>
 
 </resources>

@@ -158,7 +158,7 @@ public class ResultActivity extends ActionBarActivity {
             movieNameView.setText(movieName);
             usernameView.setText(username);
             dateView.setText(date);
-            scoreView.setText(score);
+            scoreView.setText(score+"/10");
 
             GraphView graph = (GraphView) findViewById(R.id.result_graph);
             DataPoint[] dataPoints = new DataPoint[rawDataString.length];
