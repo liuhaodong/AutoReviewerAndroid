@@ -6,58 +6,100 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="edu.cmu.lti.autoreviewer.autoreviewer.RecordActivity$PlaceholderFragment">
+    tools:context="edu.cmu.lti.autoreviewer.autoreviewer.RecordActivity$PlaceholderFragment"
+    android:background="@drawable/background">
 
 
-
-    <Button
-        android:id="@+id/get_result_button"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Get Result"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:gravity="center"
+        android:id="@+id/linearLayout">
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Record"
-        android:id="@+id/record_button"
-        android:layout_above="@+id/get_result_button"
-        android:layout_alignLeft="@+id/textView2"
-        android:layout_alignStart="@+id/textView2"
-        android:layout_marginBottom="43dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:id="@+id/textView2"
+            android:textColor="@android:color/black"
+            android:singleLine="true"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:textSize="40dp" />
+    </LinearLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/app_name"
-        android:id="@+id/textView2"
-        android:textColor="@android:color/black"
-        android:singleLine="true"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/movie_image"
-        android:src="@drawable/la_luna"
+        android:layout_below="@+id/linearLayout"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/textView2"
-        android:layout_above="@+id/record_button"
-        android:layout_alignRight="@+id/get_result_button"
-        android:layout_alignEnd="@+id/get_result_button" />
+        android:gravity="center"
+        android:id="@+id/linearLayout2">
 
-    <TextView
-        android:layout_width="wrap_content"
+        <ImageView
+            android:layout_width="466dp"
+            android:layout_height="586dp"
+            android:id="@+id/movie_image"
+            android:src="@drawable/laluna"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/record_button"
+            android:layout_toEndOf="@+id/record_button" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="EEG Value"
-        android:id="@+id/eeg_value"
-        android:layout_above="@+id/get_result_button"
-        android:layout_centerHorizontal="true" />
+        android:layout_below="@+id/linearLayout2"
+        android:gravity="center"
+        android:id="@+id/linearLayout3">
+
+        <Button
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="Record"
+            android:id="@+id/record_button"
+            android:layout_above="@+id/get_result_button"
+            android:layout_alignLeft="@+id/textView2"
+            android:layout_alignStart="@+id/textView2"
+            android:textSize="20dp"
+            android:background="#55a955" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="EEG Value"
+            android:id="@+id/eeg_value"
+            android:layout_above="@+id/get_result_button"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:textSize="20dp"
+            android:textColor="#000000" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/linearLayout3"
+        android:gravity="bottom|right">
+
+        <Button
+            android:id="@+id/get_result_button"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:text="Get Result"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:textColor="#000000"
+            android:textSize="20dp"
+            android:background="#55a955" />
+    </LinearLayout>
 
 
 </RelativeLayout>

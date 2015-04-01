@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/AutoReviewer.iml" filepath="$PROJECT_DIR$/AutoReviewer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AutoReviewerAndroid.iml" filepath="$PROJECT_DIR$/AutoReviewerAndroid.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

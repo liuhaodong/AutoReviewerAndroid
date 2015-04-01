@@ -3,11 +3,9 @@ package edu.cmu.lti.autoreviewer.autoreviewer;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.interaxon.libmuse.Muse;
 import com.interaxon.libmuse.MuseDataPacketType;
@@ -149,7 +146,7 @@ public class RecordActivity extends ActionBarActivity  {
 
             switch (movieName){
                 case "La Luna":
-                    img.setImageResource(R.drawable.la_luna);
+                    img.setImageResource(R.drawable.laluna);
                     break;
                 case "Transformers":
                     img.setImageResource(R.drawable.transformers);
@@ -158,10 +155,13 @@ public class RecordActivity extends ActionBarActivity  {
                     img.setImageResource(R.drawable.godzilla);
                     break;
                 case "iphone_ads":
-                    img.setImageResource(R.drawable.iphone_5s);
+                    img.setImageResource(R.drawable.iphone5s);
                     break;
                 case "iphone_android_wp":
                     img.setImageResource(R.drawable.applevsandroidvswindows);
+                    break;
+                case "Crash The Super Bowl":
+                    img.setImageResource(R.drawable.doritos);
                     break;
                 default:
                     break;
