@@ -46,7 +46,13 @@
             android:src="@drawable/laluna"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/record_button"
-            android:layout_toEndOf="@+id/record_button" />
+            android:layout_toEndOf="@+id/record_button"
+            android:clickable="true"
+            android:autoLink="web"
+            android:cursorVisible="true"
+            android:text="StackOverflow"
+            android:linksClickable="true"
+            android:onClick="goToSo"/>
     </LinearLayout>
 
     <LinearLayout
