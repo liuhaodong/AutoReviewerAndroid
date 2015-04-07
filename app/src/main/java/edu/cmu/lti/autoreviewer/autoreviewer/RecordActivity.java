@@ -91,7 +91,7 @@ public class RecordActivity extends ActionBarActivity  {
     }
 
     public void goToSo (View view) {
-        goToUrl ( "https://www.youtube.com/watch?v=Kzt_j07-lkE&list=PLKMjqoaBW16XbjBbbdFmfbsYj5frmz6js");
+        goToUrl ( "https://www.youtube.com/watch?v=XpwDR7RHi5M&list=PLPMrWrjM-8fFCVm0irK0jUTlWlx3XlLX8");
     }
 
     private void goToUrl (String url) {

@@ -160,17 +160,17 @@ public class ResultActivity extends ActionBarActivity {
             dateView.setText(date);
             scoreView.setText(score+"/10");
 
-            GraphView graph = (GraphView) findViewById(R.id.result_graph);
-            DataPoint[] dataPoints = new DataPoint[rawDataString.length];
+            //GraphView graph = (GraphView) findViewById(R.id.result_graph);
+            //DataPoint[] dataPoints = new DataPoint[rawDataString.length];
 
-            int sum = 0;
-            for (int i = 0; i < rawDataString.length; i++) {
-                dataPoints[i] = new DataPoint(i * timeInterval, Double.parseDouble(rawDataString[i]));
-            }
+            //int sum = 0;
+            //for (int i = 0; i < rawDataString.length; i++) {
+            //    dataPoints[i] = new DataPoint(i * timeInterval, Double.parseDouble(rawDataString[i]));
+            //}
 
-            LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(dataPoints);
+            //LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(dataPoints);
 
-            graph.addSeries(series);
+            //graph.addSeries(series);
         }
     }
 
