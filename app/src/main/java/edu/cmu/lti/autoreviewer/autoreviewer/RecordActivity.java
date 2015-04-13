@@ -32,7 +32,7 @@ import edu.cmu.lti.autoreviewer.helper.MuseSingle;
 import edu.cmu.lti.autoreviewer.musereceiver.MuseIOReceiver;
 
 
-public class RecordActivity extends ActionBarActivity  {
+public class RecordActivity extends ActionBarActivity {
 
     private MuseIOReceiver receiver;
 
@@ -50,13 +50,20 @@ public class RecordActivity extends ActionBarActivity  {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record);
-        if (savedInstanceState == null) {
+
+        if (savedInstanceState != null) {
+            // Restore value of members from saved state
+            uploadFlag = savedInstanceState.getBoolean("isRecording");
+        } else {
+            uploadFlag = false;
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+
 
         muse = MuseSingle.getMuse();
 
@@ -90,11 +97,12 @@ public class RecordActivity extends ActionBarActivity  {
 
     }
 
-    public void goToSo (View view) {
-        goToUrl ( "https://www.youtube.com/watch?v=XpwDR7RHi5M&list=PLPMrWrjM-8fFCVm0irK0jUTlWlx3XlLX8");
+
+    public void goToSo(View view) {
+        goToUrl("https://www.youtube.com/watch?v=ObHdN3LjYpw&index=1&list=PLPMrWrjM-8fFCVm0irK0jUTlWlx3XlLX8");
     }
 
-    private void goToUrl (String url) {
+    private void goToUrl(String url) {
         Uri uriUrl = Uri.parse(url);
         Intent launchBrowser = new Intent(Intent.ACTION_VIEW, uriUrl);
         startActivity(launchBrowser);
@@ -110,6 +118,11 @@ public class RecordActivity extends ActionBarActivity  {
         super.onPause();
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putBoolean("isRecording", uploadFlag);
+        super.onSaveInstanceState(outState);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -134,7 +147,6 @@ public class RecordActivity extends ActionBarActivity  {
     }
 
 
-
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -144,7 +156,6 @@ public class RecordActivity extends ActionBarActivity  {
         }
 
 
-
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
@@ -152,10 +163,10 @@ public class RecordActivity extends ActionBarActivity  {
 
             Button resultButton = (Button) rootView.findViewById(R.id.get_result_button);
 
-            ImageView img= (ImageView) rootView.findViewById(R.id.movie_image);
+            ImageView img = (ImageView) rootView.findViewById(R.id.movie_image);
 
 
-            switch (movieName){
+            switch (movieName) {
                 case "La Luna":
                     img.setImageResource(R.drawable.laluna);
                     break;
@@ -179,11 +190,10 @@ public class RecordActivity extends ActionBarActivity  {
             }
 
 
-
             resultButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if(startTime == null || endTime == null){
+                    if (startTime == null || endTime == null) {
                         return;
                     }
                     Intent resultIntent = new Intent(v.getContext(), ResultActivity.class);
@@ -199,22 +209,24 @@ public class RecordActivity extends ActionBarActivity  {
 
 
             final Button recordButton = (Button) rootView.findViewById(R.id.record_button);
-            recordButton.setTag(1);
+
+            if(!(recordButton instanceof  Button)){
+                return  rootView;
+            }
+
             recordButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    final int status = (Integer) v.getTag();
-                    if (status == 1) {
+                    RecordActivity.uploadFlag = !RecordActivity.uploadFlag;
+                    if (RecordActivity.uploadFlag) {
                         RecordActivity.startTime = new Date();
 
                         recordButton.setText("Stop");
-                        v.setTag(0); //pause
-                        RecordActivity.uploadFlag = !RecordActivity.uploadFlag;
+
                     } else {
                         RecordActivity.endTime = new Date();
                         recordButton.setText("Record");
-                        v.setTag(1); //record
-                        RecordActivity.uploadFlag = !RecordActivity.uploadFlag;
+
                     }
                 }
             });

@@ -56,7 +56,11 @@ public class DataListener extends MuseDataListener {
                     eegValueString += String.format(
                             "%.2f", data.get(Eeg.TP10.ordinal()));
 
-                    eegValueView.setText(eegValueString);
+                    if(eegValueView instanceof TextView ){
+                        eegValueView.setText(eegValueString);
+                    }
+
+
 
                     float[] eegData = new float[data.size()];
                     for(int i=0 ;i < data.size() ; i++){
