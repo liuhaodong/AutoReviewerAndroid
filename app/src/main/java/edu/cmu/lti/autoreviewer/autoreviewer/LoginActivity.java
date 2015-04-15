@@ -133,6 +133,7 @@ public class LoginActivity extends Activity implements LoaderCallbacks<Cursor>, 
 
         mServerIP = (EditText) findViewById(R.id.server_ip);
         mServerIP.setText(DefaultConfig.DEFAULT_SERVER_IP);
+        mUsername.setText(DefaultConfig.DEFAULT_USERNAME);
         mServerIP.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
