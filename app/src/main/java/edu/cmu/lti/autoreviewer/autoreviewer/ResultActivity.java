@@ -12,6 +12,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.jjoe64.graphview.GraphView;
@@ -23,6 +26,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 import edu.cmu.lti.autoreviewer.configuration.DefaultConfig;
 
@@ -128,11 +137,11 @@ public class ResultActivity extends ActionBarActivity {
         @Override
         protected void onPostExecute(String result) {
             Log.d("review", result);
-            TextView reviewText = (TextView) findViewById(R.id.review_text);
-            TextView movieNameView = (TextView) findViewById(R.id.movie_name);
+//            TextView reviewText = (TextView) findViewById(R.id.review_text);
+//            TextView movieNameView = (TextView) findViewById(R.id.movie_name);
             TextView usernameView = (TextView) findViewById(R.id.user_name_result);
             TextView dateView = (TextView) findViewById(R.id.review_date);
-            TextView scoreView = (TextView) findViewById(R.id.score_value);
+//            TextView scoreView = (TextView) findViewById(R.id.score_value);
             String[] reviewArray = result.split("#");
             if (reviewArray.length < 5) {
                 return;
@@ -148,31 +157,147 @@ public class ResultActivity extends ActionBarActivity {
 
             String[] reviewTextSegments = reviewTextString.split("\\$");
 
-            String finalReviewString = "";
 
-            for (String tmp : reviewTextSegments) {
-                finalReviewString = finalReviewString + tmp + "\n";
+            String finalReviewString = "";
+            ArrayList<Double> scores = new ArrayList<Double>();
+
+            Map<String, Double> stringScore = new HashMap<>();
+
+            for (int i = 0; i < reviewTextSegments.length; i++) {
+//                finalReviewString = finalReviewString + tmp + "\n";
+                String parsedTmp[] = reviewTextSegments[i].split(":");
+                if (parsedTmp.length < 3){
+                    continue;
+                } else {
+                    Double tmpScore = Double.parseDouble(parsedTmp[2].replace("(", "").replace(")", ""));
+
+                    tmpScore += 0.01*i;
+
+                    stringScore.put(reviewTextSegments[i], tmpScore);
+                    scores.add(tmpScore);
+                }
             }
 
-            reviewText.setText(finalReviewString);
-            movieNameView.setText(movieName);
-            usernameView.setText(username);
-            dateView.setText(date);
-            scoreView.setText(score+"/10");
+            ArrayList<Double> shuffle = new ArrayList<Double>(scores);
 
-            //GraphView graph = (GraphView) findViewById(R.id.result_graph);
-            //DataPoint[] dataPoints = new DataPoint[rawDataString.length];
 
-            //int sum = 0;
-            //for (int i = 0; i < rawDataString.length; i++) {
-            //    dataPoints[i] = new DataPoint(i * timeInterval, Double.parseDouble(rawDataString[i]));
-            //}
 
-            //LineGraphSeries<DataPoint> series = new LineGraphSeries<DataPoint>(dataPoints);
+            Collections.sort(shuffle);
+            ArrayList<Integer>largeThree = new ArrayList<Integer>();
+            Double largeSum = 0.0;
+            ArrayList<Integer>smallThree = new ArrayList<Integer>();
+            Double smallSum = 0.0;
+            ArrayList<Integer>midFour = new ArrayList<Integer>();
+            Double midSum = 0.0;
 
-            //graph.addSeries(series);
+
+
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < scores.size(); j++) {
+                    if (scores.get(j) == shuffle.get(i)) {
+                        smallThree.add(j);
+                        smallSum += scores.get(j);
+                    }
+                }
+                for (int j = 0; j < scores.size(); j++) {
+                    if (scores.get(j) == shuffle.get(reviewTextSegments.length - i - 1)) {
+                        largeThree.add(j);
+                        largeSum += scores.get(j);
+                    }
+                }
+            }
+
+            for (int i = 0; i < scores.size(); i++) {
+                boolean flag = true;
+                for (int idx : largeThree) {
+                    if (i == idx) {
+                        flag = false;
+                        break;
+                    }
+                }
+                for (int idx : smallThree) {
+                    if (i == idx) {
+                        flag = false;
+                        break;
+                    }
+                }
+                if (flag) {
+                    midFour.add(i);
+                    midSum += scores.get(i);
+                }
+            }
+
+
+            // Large three
+            ImageView view1 = (ImageView) findViewById(R.id.imageView);
+            view1.setImageResource(getImageResource(largeThree.get(0)));
+
+            ImageView view2 = (ImageView) findViewById(R.id.imageView2);
+            view2.setImageResource(getImageResource(largeThree.get(1)));
+
+            ImageView view3 = (ImageView) findViewById(R.id.imageView3);
+            view3.setImageResource(getImageResource(largeThree.get(2)));
+
+            ((TextView) findViewById(R.id.textView8) ).setText(new DecimalFormat("##.#").format(largeSum.doubleValue()/3) + "");
+
+            // Small three
+
+            ImageView view4 = (ImageView) findViewById(R.id.imageView4);
+            view4.setImageResource(getImageResource(smallThree.get(0)));
+
+            ImageView view5 = (ImageView) findViewById(R.id.imageView5);
+            view5.setImageResource(getImageResource(smallThree.get(1)));
+
+            ImageView view6 = (ImageView) findViewById(R.id.imageView6);
+            view6.setImageResource(getImageResource(smallThree.get(2)));
+
+            ((TextView) findViewById(R.id.textView11) ).setText(new DecimalFormat("##.#").format(smallSum.doubleValue()/3) + "");
+
+            // Medium four
+            ImageView view7 = (ImageView) findViewById(R.id.imageView7);
+            view7.setImageResource(getImageResource(midFour.get(0)));
+
+            ImageView view8 = (ImageView) findViewById(R.id.imageView8);
+            view8.setImageResource(getImageResource(midFour.get(1)));
+
+            ImageView view9 = (ImageView) findViewById(R.id.imageView9);
+            view9.setImageResource(getImageResource(midFour.get(2)));
+
+            ImageView view10 = (ImageView) findViewById(R.id.imageView10);
+            view10.setImageResource(getImageResource(midFour.get(3)));
+
+            ((TextView) findViewById(R.id.textView10) ).setText(new DecimalFormat("##.#").format(midSum.doubleValue()/4) + "");
+
         }
     }
+
+    private int getImageResource(int index){
+        switch (index){
+            case 0:
+                return R.drawable.p1;
+            case 1:
+                return R.drawable.p2;
+            case 2:
+                return R.drawable.p3;
+            case 3:
+                return R.drawable.p4;
+            case 4:
+                return R.drawable.p5;
+            case 5:
+                return R.drawable.p6;
+            case 6:
+                return R.drawable.p7;
+            case 7:
+                return R.drawable.p8;
+            case 8:
+                return R.drawable.p9;
+            case 9:
+                return R.drawable.p10;
+            default:
+                return R.drawable.p1;
+        }
+    }
+
 
     /**
      * A placeholder fragment containing a simple view.
@@ -186,7 +311,6 @@ public class ResultActivity extends ActionBarActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_result, container, false);
-
             return rootView;
         }
     }
