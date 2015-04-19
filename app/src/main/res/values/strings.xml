@@ -22,6 +22,7 @@
     <string name="eeg">EEG data:</string>
     <string name="accel">Accelerometer Data:</string>
     <string name="version">Version:</string>
-    <string name="undefined">NaN</string>
+    <string name="undefined">Not Connected</string>
+    <string name="title_activity_muse_connect">MuseConnect</string>
 
 </resources>

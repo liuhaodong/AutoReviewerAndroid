@@ -41,17 +41,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/app_name"
-                        android:id="@+id/textView2"
-                        android:textColor="@android:color/black"
-                        android:singleLine="true"
-                        android:layout_alignParentTop="true"
-                        android:layout_centerHorizontal="true"
-                        android:textSize="40dp" />
-
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="350dp"
@@ -65,7 +54,8 @@
                         android:cursorVisible="true"
                         android:text="StackOverflow"
                         android:linksClickable="true"
-                        android:onClick="goToSo"/>
+                        android:onClick="goToSo"
+                        android:layout_marginTop="50dp" />
 
                 </LinearLayout>
 
@@ -78,7 +68,7 @@
                         android:layout_height="wrap_content"
                         android:text="Record"
                         android:id="@+id/record_button"
-                        android:textSize="20sp"
+                        android:textSize="15sp"
                         android:background="#55a955"
                         android:layout_gravity="center_horizontal"
                         android:layout_alignTop="@+id/get_result_button"
@@ -103,7 +93,7 @@
                         android:layout_height="wrap_content"
                         android:text="Get Result"
                         android:textColor="#000000"
-                        android:textSize="20dp"
+                        android:textSize="15dp"
                         android:background="#55a955"
                         android:layout_gravity="center_horizontal"
                         android:ellipsize="marquee"
@@ -117,6 +107,23 @@
 
         </LinearLayout>
     </ScrollView>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout3" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:id="@+id/textView15"
+            android:textColor="#000000"
+            android:singleLine="true"
+            android:layout_gravity="center"
+            android:textSize="40dp" />
+    </LinearLayout>
 
 
 </RelativeLayout>

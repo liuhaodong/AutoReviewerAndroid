@@ -157,6 +157,8 @@ public class ResultActivity extends ActionBarActivity {
 
             String[] reviewTextSegments = reviewTextString.split("\\$");
 
+            usernameView.setText(username);
+            dateView.setText(date);
 
             String finalReviewString = "";
             ArrayList<Double> scores = new ArrayList<Double>();
@@ -192,7 +194,7 @@ public class ResultActivity extends ActionBarActivity {
 
 
 
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 2; i++) {
                 for (int j = 0; j < scores.size(); j++) {
                     if (scores.get(j) == shuffle.get(i)) {
                         smallThree.add(j);
@@ -235,10 +237,10 @@ public class ResultActivity extends ActionBarActivity {
             ImageView view2 = (ImageView) findViewById(R.id.imageView2);
             view2.setImageResource(getImageResource(largeThree.get(1)));
 
-            ImageView view3 = (ImageView) findViewById(R.id.imageView3);
-            view3.setImageResource(getImageResource(largeThree.get(2)));
+//            ImageView view3 = (ImageView) findViewById(R.id.imageView3);
+//            view3.setImageResource(getImageResource(largeThree.get(2)));
 
-            ((TextView) findViewById(R.id.textView8) ).setText(new DecimalFormat("##.#").format(largeSum.doubleValue()/3) + "");
+            ((TextView) findViewById(R.id.textView8) ).setText(new DecimalFormat("##.#").format(largeSum.doubleValue()/2) + "");
 
             // Small three
 
@@ -248,10 +250,10 @@ public class ResultActivity extends ActionBarActivity {
             ImageView view5 = (ImageView) findViewById(R.id.imageView5);
             view5.setImageResource(getImageResource(smallThree.get(1)));
 
-            ImageView view6 = (ImageView) findViewById(R.id.imageView6);
-            view6.setImageResource(getImageResource(smallThree.get(2)));
+//            ImageView view6 = (ImageView) findViewById(R.id.imageView6);
+//            view6.setImageResource(getImageResource(smallThree.get(2)));
 
-            ((TextView) findViewById(R.id.textView11) ).setText(new DecimalFormat("##.#").format(smallSum.doubleValue()/3) + "");
+            ((TextView) findViewById(R.id.textView11) ).setText(new DecimalFormat("##.#").format(smallSum.doubleValue()/2) + "");
 
             // Medium four
             ImageView view7 = (ImageView) findViewById(R.id.imageView7);
@@ -260,13 +262,13 @@ public class ResultActivity extends ActionBarActivity {
             ImageView view8 = (ImageView) findViewById(R.id.imageView8);
             view8.setImageResource(getImageResource(midFour.get(1)));
 
-            ImageView view9 = (ImageView) findViewById(R.id.imageView9);
-            view9.setImageResource(getImageResource(midFour.get(2)));
+//            ImageView view9 = (ImageView) findViewById(R.id.imageView9);
+//            view9.setImageResource(getImageResource(midFour.get(2)));
+//
+//            ImageView view10 = (ImageView) findViewById(R.id.imageView10);
+//            view10.setImageResource(getImageResource(midFour.get(3)));
 
-            ImageView view10 = (ImageView) findViewById(R.id.imageView10);
-            view10.setImageResource(getImageResource(midFour.get(3)));
-
-            ((TextView) findViewById(R.id.textView10) ).setText(new DecimalFormat("##.#").format(midSum.doubleValue()/4) + "");
+            ((TextView) findViewById(R.id.textView10) ).setText(new DecimalFormat("##.#").format(midSum.doubleValue()/2) + "");
 
         }
     }
@@ -282,9 +284,9 @@ public class ResultActivity extends ActionBarActivity {
             case 3:
                 return R.drawable.p4;
             case 4:
-                return R.drawable.p5;
+                return R.drawable.p8;
             case 5:
-                return R.drawable.p6;
+                return R.drawable.p9;
             case 6:
                 return R.drawable.p7;
             case 7:
